@@ -1,0 +1,71 @@
+services:
+    laravel.test:
+        build:
+            context: ./vendor/laravel/sail/runtimes/8.3
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.2/app
+        container_name: princeps-loan-server
+        ports:
+            - '${APP_PORT:-5443}:80'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - mysql
+            - redis
+    mysql:
+        container_name: princeps-loan-mysql
+        image: 'mysql:latest'
+        ports:
+            - '${FORWARD_DB_PORT:-9762}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        volumes:
+            - './docker/db:/var/lib/mysql'
+        networks:
+            - sail
+    redis:
+        image: 'redis:alpine'
+        container_name: princeps-loan-redis
+        ports:
+            - '${FORWARD_REDIS_PORT:-7587}:6379'
+        volumes:
+            - 'sailredis:/data'
+        networks:
+            - sail
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: princeps-loan-pma
+        environment:
+            PMA_HOST: '${DB_HOST}'
+            PMA_PORT: '${DB_PORT}'
+            PMA_USER: '${DB_USERNAME}'
+            PMA_PASSWORD: '${DB_PASSWORD}'
+            PMA_ARBITRARY: 1
+        restart: always
+        ports:
+            - '${PMA_PORT:-8673}:80'
+        networks:
+            - sail
+        depends_on:
+            - mysql
+networks:
+    sail:
+        driver: bridge
+volumes:
+    sailmysql:
+        driver: local
+    sailredis:
+        driver: local
+    sail-mysql:
+        driver: local
