@@ -56,7 +56,6 @@ class OauthAccessToken extends Model
     /**
      * this adds the provider type after creating an access token
      * All the Available Guards Are:
-     * 'api', 'vendor', 'terminal_manager', 'driver'
      * @param string $bearerToken
      * @param string $guard
      */
