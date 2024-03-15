@@ -1,6 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\AuthUserController;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\UserLoanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,12 +19,23 @@ use Illuminate\Support\Facades\Route;
 # This is the version 1 definition of all routes/endpoints
 Route::group(['prefix' => 'v1'], function () {
 
+    Route::get('welcome', [Controller::class, 'welcome']);
     # This manages all the internal calls and implementation of the endpoints
     Route::group(['middleware' => ['validate.headers']], function () {
 
         Route::group(['prefix' => 'onboarding'], function () {
-            Route::post('apply', [UssdController::class, 'notify']);
-            Route::post('repay', [UssdController::class, 'testSessionCache']);
+            Route::post('login', [AuthUserController::class, 'login']);
+            Route::post('register', [AuthUserController::class, 'register']);
+        });
+
+        Route::group(['middleware' => ['manage.access']], function () {
+            Route::group(['middleware' => ['auth:api']], function () {
+                Route::group(['prefix' => 'users'], function () {
+                    Route::get('details', [UserLoanController::class, 'getUserDetails']);
+                    Route::post('apply', [UserLoanController::class, 'applyForLoan']);
+                    Route::post('repay', [UserLoanController::class, 'repayLoan']);
+                });
+            });
         });
     });
 });

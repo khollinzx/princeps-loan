@@ -22,7 +22,7 @@ class Controller extends BaseController
     /**
      * @return JsonResponse
      */
-    public function welcomeToApiVersionOne(): JsonResponse
+    public function welcome(): JsonResponse
     {
         return JsonResponseAPI::successResponse("Welcome to Princeps Api version 1: " . Carbon::now());
     }

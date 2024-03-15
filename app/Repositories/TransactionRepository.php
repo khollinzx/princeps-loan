@@ -6,6 +6,7 @@ use App\Abstractions\AbstractClasses\BaseRepositoryAbstract;
 use App\Models\AgentOtp;
 use App\Models\AgentPurse;
 use App\Models\Product;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -16,13 +17,13 @@ class TransactionRepository extends BaseRepositoryAbstract
     /**
      * @var string
      */
-    protected string $databaseTableName = 'products';
+    protected string $databaseTableName = 'transactions';
 
     /**
      *
-     * @param Product $model
+     * @param Transaction $model
      */
-    public function __construct(Product $model)
+    public function __construct(Transaction $model)
     {
         parent::__construct($model, $this->databaseTableName);
     }

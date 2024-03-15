@@ -22,8 +22,7 @@ class OauthAccessToken extends Model
     public static function processTableTruncation()
     {
         self::truncate();
-
-        exec("php artisan passport:install");
+//        exec("php artisan passport:install");
     }
 
     /**
@@ -47,7 +46,6 @@ class OauthAccessToken extends Model
     public static function deleteUserAccessToken(int $userID, string $guard = 'user')
     {
         $tokens = self::getUserTokens($userID, $guard);
-
         if(count($tokens) > 0)
             foreach ($tokens as $token)
                 $token->delete();
@@ -63,9 +61,7 @@ class OauthAccessToken extends Model
     {
         $token = (new Parser(new JoseEncoder()))->parse($bearerToken)->claims()->all()['jti'];
         $User = self::find($token);
-
-        if($User)
-        {
+        if($User) {
             $User->guard = $guard;
             $User->save();
         }
@@ -81,21 +77,15 @@ class OauthAccessToken extends Model
     public static function createAccessToken(Model $model, string $guard = 'user'): array
     {
         self::deleteUserAccessToken($model->id, $guard);
-
         $accessToken = '';
         $token = $model->createToken('accessToken')->accessToken;
-
-        if($token)
-        {
+        if($token) {
             $accessToken = $token;
-
             self::addGuard($accessToken, $guard);
         }
-
         $ResponseObject['accessToken'] = $accessToken;
         $ResponseObject['userType'] = $guard;
         $ResponseObject['profile'] = $model;
-
         return $ResponseObject;
     }
 
@@ -107,12 +97,9 @@ class OauthAccessToken extends Model
     public static function retrieveOauthProvider(string $bearerToken) : string
     {
         $token = (new Parser(new JoseEncoder()))->parse($bearerToken)->claims()->all()['jti'];
-
         $value = null;
         $Provider = self::find($token)->provider;
-
         $Provider? $value = $Provider : $value = '';
-
         return $value;
     }
 

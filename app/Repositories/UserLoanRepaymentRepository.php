@@ -7,6 +7,7 @@ use App\Models\AgentOtp;
 use App\Models\AgentPurse;
 use App\Models\State;
 use App\Models\User;
+use App\Models\UserLoanRepayment;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,13 +17,13 @@ class UserLoanRepaymentRepository extends BaseRepositoryAbstract
     /**
      * @var string
      */
-    protected string $databaseTableName = 'states';
+    protected string $databaseTableName = 'user_loan_repayments';
 
     /**
      *
-     * @param State $model
+     * @param UserLoanRepayment $model
      */
-    public function __construct(State $model)
+    public function __construct(UserLoanRepayment $model)
     {
         parent::__construct($model, $this->databaseTableName);
     }

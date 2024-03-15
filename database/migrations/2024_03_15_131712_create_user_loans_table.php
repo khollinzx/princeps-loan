@@ -19,7 +19,7 @@ return new class extends Migration
             $table->double('income');
             $table->double('loan_amount');
             $table->string('status');
-            $table->tinyInteger('is_full_paid');
+            $table->tinyInteger('is_fully_paid')->default(0);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete(Constants::SET_NULL);

@@ -18,7 +18,7 @@ class ManageUsersAccess
 {
 
     /**
-     * @param UserRepository $staffRepository
+     * @param UserRepository $userRepository
      */
     public function __construct(protected UserRepository $userRepository)
     {
@@ -41,36 +41,18 @@ class ManageUsersAccess
 
         if(!$request->hasHeader('authorization')) return JsonResponseAPI::errorResponse("Access denied! No Authorization header was defined.", JsonResponseAPI::$BAD_REQUEST);
 
-        $guard = $request->guard?? 'admin';//use this when using the Admin privilege access control
+        if(!$request->guard?? 'user') return JsonResponseAPI::errorResponse("Access denied! No guard passed.", JsonResponseAPI::$UNAUTHORIZED);
 
-        if(!$guard) return JsonResponseAPI::errorResponse("Access denied! No guard passed.", JsonResponseAPI::$UNAUTHORIZED);
-
-        if(!in_array($guard, $allowedGuards)) return JsonResponseAPI::errorResponse("Auth guard is invalid.", JsonResponseAPI::$UNAUTHORIZED);
+        if(!in_array($request->guard, $allowedGuards)) return JsonResponseAPI::errorResponse("Auth guard is invalid.", JsonResponseAPI::$UNAUTHORIZED);
 
         /**
          *
          * Switch among the guard requested and set the provider
          * accordingly using passport authentication means
          */
-        switch ($guard) {
-            case 'merchant':
-                OauthAccessToken::setAuthProvider('merchants');
-                break;
-
-            case 'admin':
-                OauthAccessToken::setAuthProvider('admins');
-                break;
-
-            case 'lite':
-                OauthAccessToken::setAuthProvider('lites');
-                break;
-
-            case 'b2b':
-                OauthAccessToken::setAuthProvider('company_staff');
-                break;
-
+        switch ($request->guard) {
             default:
-                OauthAccessToken::setAuthProvider('agents');
+                OauthAccessToken::setAuthProvider('users');
                 break;
         }
 

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Abstractions\AbstractClasses\UserModelAbstract;
 use App\Traits\HasRepositoryTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable
+class User extends UserModelAbstract
 {
     use HasApiTokens, HasFactory, Notifiable, HasRepositoryTrait;
 
@@ -23,12 +26,14 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'name',
         'email',
         'password',
         'dob',
         'phone',
+    ];
+
+    protected array $relationships = [
     ];
 
     /**
@@ -94,5 +99,15 @@ class User extends Authenticatable
     public function getDOB(): string
     {
         return $this->attributes['dob'];
+    }
+
+    /**
+     * @param string $column
+     * @param string $value
+     * @return Builder|Model|object|null
+     */
+    public static function getUserByColumnAndValue(string $column, string $value)
+    {
+        return self::with((new self())->relationships)->where($column, $value)->first();
     }
 }

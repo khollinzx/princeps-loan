@@ -40,4 +40,14 @@ class UserRepository extends BaseRepositoryAbstract
     {
         return $this->model::with($this->model->relationships)->where($queries)->sharedLock()->first();
     }
+
+    /**
+     * @param string $column
+     * @param $value
+     * @return mixed
+     */
+    public function getUserByColumnAndValue(string $column, $value)
+    {
+        return $this->model::getUserByColumnAndValue($column, $value);
+    }
 }

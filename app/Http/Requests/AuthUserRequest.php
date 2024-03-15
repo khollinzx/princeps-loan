@@ -3,19 +3,12 @@
 namespace App\Http\Requests;
 
 
-use App\Http\Controllers\Controller;
-use App\Models\UserLoan;
 use App\Services\JsonResponseAPI;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
 
-class UserLoanRequest extends BaseFormRequest
+class AuthUserRequest extends BaseFormRequest
 {
-
-    public function __construct(protected Controller $controller)
-    {
-        parent::__construct();
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -31,8 +24,12 @@ class UserLoanRequest extends BaseFormRequest
         $validation = [];
 
         switch (basename($this->url())) {
-            case "apply":
-                $validation = $this->applyLoan();
+            case "login":
+                $validation = $this->authLogin();
+                break;
+
+            case "register":
+                $validation = $this->auhtRegister();
                 break;
         }
 
@@ -43,18 +40,27 @@ class UserLoanRequest extends BaseFormRequest
      * Handle the login section
      * @return array
      */
-    public function applyLoan(): array
+    public function auhtRegister(): array
     {
         return [
-            'income' => 'required|numeric',
-            'loan_amount' => [
-                'required',
-                'numeric',
-                function ($key, $value, $next) {
-                    $loan = UserLoan::repo()->findSingleByWhereClause(['user_id' => $this->controller->getUserId(), 'is_fully_paid' => 0]);
-                    if($loan) $next("Sorry, you are yet to pay up your current loan.");
-                }
-            ]
+            'name' => 'required|string',
+            'email' => 'required|email|string',
+            'address' => 'required|string',
+            'dob' => 'required|string|date_format:Y-m-d',
+            'phone' => 'required|string',
+            'password' => 'required|string'
+        ];
+    }
+
+    /**
+     * Handle the login section
+     * @return array
+     */
+    public function authLogin(): array
+    {
+        return [
+            'email' => 'required|email|string',
+            'password' => 'required|string'
         ];
     }
 }
